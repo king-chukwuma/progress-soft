@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface ForexTransactionDetailsRepository extends JpaRepository<ForexTransactionDetails, Long> {
 
-    Optional<ForexTransactionDetails> findByTransactionId(UUID transationId);
+    Optional<ForexTransactionDetails> findByTransactionId(UUID transactionId);
 
     Page<ForexTransactionDetails> findAll(Pageable pageable);
 

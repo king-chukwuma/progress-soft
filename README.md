@@ -8,29 +8,31 @@ One can perform the following operations:
 * Get all created forex transactions 
 * Get a forex transaction using the transaction id.
 
-##  Quick Run - Docker
-```sh
-docker-compose up
-```
-* The first run will fail because mysql database is yet to download completely. This will reconnect to sync up with the database.
-* Error may also occur if the port is in use, you may change the port on docker-compose.yml file.
+##  To run the project locally
 
+* Run this maven wrapper command
 
-## Project Run
-#### How to run the project
-* Go to application.yml in resources package and input your MYSQL username and password.
-
-* Run this command
 ```sh
 ./mvnw clean install 
 ```
+
+* Make sure you have docker installed on your machine. Then run
+```sh
+docker compose up
+```
+
+## After running the project, ensure to run
+```sh
+docker compose down
+```
+* This is to remove the containers that were created
 
 ## Project Documentation
 
 ### Technology Used
 * SPRINGBOOT
 * MYSQL
-* DOCKER
+* DOCKER, DOCKER COMPOSE
 
 ## Project Packages
 ### Controller
@@ -96,4 +98,4 @@ docker-compose up
 
 TEST
 - Unit test in the test folder covers:
-* FxDeal Controller
+* FOREX Transaction Controller

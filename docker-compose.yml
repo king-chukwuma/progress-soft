@@ -7,37 +7,35 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: Chukwuma123@
+      MYSQL_ROOT_PASSWORD: "Chukwuma123@"
 #    command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
     networks:
-      - bored-network
+      - progress-soft-network
     volumes:
-      - dbvol:/var/lib/mysql
+      - app-db:/var/lib/mysql
 
 
   progress-soft-test:
     depends_on:
       - mysql-instance
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-instance:3306/progress-soft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_PASSWORD: "Chukwuma123@"
     command: "./mvnw clean install"
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
     container_name: "progress-soft-app"
+    expose:
+      - "8090"
     networks:
-      - bored-network
-    environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-instance:3308?autoReconnect=true&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
-      "spring.datasource.username": "root"
-      "hibernate.connection.url": "jdbc:mysql://mysql-instance:3306?useSSL=false"
-      "spring.datasource.password": "Chukwuma123@"
-      "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.MySQL8Dialect"
-      "spring.jpa.hibernate.ddl-auto": "update"
-      spring.jpa.database: "mysql"
-
+      - progress-soft-network
 
 networks:
-  bored-network:
-    name: bored-network
+  progress-soft-network:
+    name: progress-soft-network
 
 volumes:
-  dbvol:
+  app-db:

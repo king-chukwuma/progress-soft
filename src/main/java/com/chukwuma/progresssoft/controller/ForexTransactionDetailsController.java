@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("api/v1/transaction")
@@ -26,7 +28,7 @@ public class ForexTransactionDetailsController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<GenericResponse<ForexTransactionDetailsResponse>> getTransaction(@PathVariable String id){
+    public ResponseEntity<GenericResponse<ForexTransactionDetailsResponse>> getTransaction(@PathVariable("id")  String id){
         return new ResponseEntity<>(forexTransactionDetailsService.getTransactionByTransactionId(id), HttpStatus.FOUND);
     }
 

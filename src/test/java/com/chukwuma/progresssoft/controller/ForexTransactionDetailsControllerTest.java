@@ -6,6 +6,7 @@ import com.chukwuma.progresssoft.dto.ForexTransactionDetailsRequest;
 import com.chukwuma.progresssoft.entities.ForexTransactionDetails;
 import com.chukwuma.progresssoft.repository.ForexTransactionDetailsRepository;
 import com.chukwuma.progresssoft.service.ForexTransactionDetailsService;
+import com.chukwuma.progresssoft.util.Util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -29,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ProgressSoftApplication.class)
@@ -101,5 +104,45 @@ public class ForexTransactionDetailsControllerTest {
         Assertions.assertThat(createdTransactionDetails.getAmount()).isEqualTo(DEFAULT_AMOUNT);
         Assertions.assertThat(createdTransactionDetails.getRecipientCurrencyISO()).isEqualTo(DEFAULT_RECIPIENT_CURRENCY);
         Assertions.assertThat(createdTransactionDetails.getSenderCurrencyISO()).isEqualTo(DEFAULT_SENDER_CURRENCY);
+    }
+
+    @Test
+    @Transactional
+    void getForexTransactionTest() throws Exception {
+        ForexTransactionDetailsRequest dto = TestUtil.createDTO(DEFAULT_AMOUNT,DEFAULT_RECIPIENT_CURRENCY, DEFAULT_SENDER_CURRENCY);
+
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+
+        UUID transactionId = forexTransactionDetailsRepository.findAll().get(0).getTransactionId();
+
+        mockMvc
+                .perform(
+                        MockMvcRequestBuilders.get("/api/v1/transaction/" + transactionId))
+                                .andExpect(MockMvcResultMatchers.status().isFound())
+                                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.body.amount").value(DEFAULT_AMOUNT))
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.body.transactionId").value(transactionId.toString()))
+                                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
+
+    }
+
+    @Test
+    @Transactional
+    void getAllForexTransactionTest() throws Exception {
+        ForexTransactionDetailsRequest dto = TestUtil.createDTO(DEFAULT_AMOUNT,DEFAULT_RECIPIENT_CURRENCY, DEFAULT_SENDER_CURRENCY);
+
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+        forexTransactionDetailsRepository.save(Util.createDealDetails(dto));
+
+        mockMvc
+                .perform(
+                        MockMvcRequestBuilders.get("/api/v1/transaction"))
+                .andExpect(MockMvcResultMatchers.status().isFound())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.body.totalElements").value(4));
+
     }
 }
